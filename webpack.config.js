@@ -83,12 +83,25 @@ module.exports = env => {
         // Loading CSS
         {
           test: /\.(css)$/,
-          use: [...getStyleLoaders(), `css-loader`]
+          use: [`style-loader`, `css-loader`]
         },
         // Loading SASS/SCSS
         {
           test: /\.(s[ca]ss)$/,
-          use: [...getStyleLoaders(), `css-loader`, `sass-loader`]
+          use: [
+            ...getStyleLoaders(),
+            {
+              loader: `css-loader`,
+              options: {
+                importLoaders: 1,
+                modules: {
+                  mode: 'local',
+                  localIdentName: '[name]__[local]-[hash:base64:5]'
+                }
+              }
+            },
+            `sass-loader`
+          ]
         }
       ]
     },
