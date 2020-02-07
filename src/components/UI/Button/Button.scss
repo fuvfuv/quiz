@@ -19,8 +19,8 @@
   }
 
   &:disabled {
-    background: #ccc;
-    color: #000;
+    background-color: #ccc !important;
+    color: #000 !important;
     cursor: not-allowed;
   }
 
