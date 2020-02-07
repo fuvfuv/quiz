@@ -10,6 +10,8 @@ import {
   validateForm
 } from "../../form/formFramework";
 
+import axios from "axios";
+
 import Auxilary from "../../hoc/Auxilary/Auxilary";
 
 function createOptionControl(number) {
@@ -91,10 +93,24 @@ export default class QuizCreator extends Component {
     });
   };
 
-  handleCreateQuiz = e => {
+  handleCreateQuiz = async e => {
     e.preventDefault();
-    console.log(this.state.quiz);
-    // TODO: Server
+
+    try {
+      await axios.post(
+        "https://react-quiz-a1017.firebaseio.com/quizes.json",
+        this.state.quiz
+      );
+
+      this.setState({
+        quiz: [],
+        rightAnswerId: 1,
+        isFormValid: false,
+        formControls: createFormControls()
+      });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   handleChange = (value, controlName) => {
