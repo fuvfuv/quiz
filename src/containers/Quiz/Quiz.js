@@ -1,8 +1,11 @@
-import React, { Component } from 'react';
-import classes from './Quiz.scss';
+import React, { Component } from "react";
+import classes from "./Quiz.scss";
 
-import ActiveQuiz from '../../components/ActiveQuiz/ActiveQuiz';
-import FinishedQuiz from '../../components/FinishedQuiz/FinishedQuiz';
+import ActiveQuiz from "../../components/ActiveQuiz/ActiveQuiz";
+import FinishedQuiz from "../../components/FinishedQuiz/FinishedQuiz";
+import axiosQuiz from "../../axios/axios-quiz";
+
+import Loader from "../../components/UI/Loader/Loader";
 
 class Quiz extends Component {
   state = {
@@ -10,36 +13,14 @@ class Quiz extends Component {
     isFinished: false,
     activeQuestion: 0,
     answerState: null, // {[id: 'success' : 'error']}
-    quiz: [
-      {
-        question: 'Какого цвета небо?',
-        rightAnswerId: 2,
-        id: 1,
-        answers: [
-          { id: 1, text: 'Черный' },
-          { id: 2, text: 'Синий' },
-          { id: 3, text: 'Красный' },
-          { id: 4, text: 'Зеленый' }
-        ]
-      },
-      {
-        question: 'В каком году основали Санкт-Петербург?',
-        rightAnswerId: 3,
-        id: 2,
-        answers: [
-          { id: 1, text: '1700' },
-          { id: 2, text: '1702' },
-          { id: 3, text: '1703' },
-          { id: 4, text: '1803' }
-        ]
-      }
-    ]
+    quiz: [],
+    loading: true
   };
 
   handleAnswerClick = answerId => {
     if (this.state.answerState) {
       const key = Object.keys(this.state.answerState)[0];
-      if (this.state.answerState[key] === 'success') {
+      if (this.state.answerState[key] === "success") {
         return;
       }
     }
@@ -49,11 +30,11 @@ class Quiz extends Component {
 
     if (question.rightAnswerId === answerId) {
       if (!results[question.id]) {
-        results[question.id] = 'success';
+        results[question.id] = "success";
       }
       this.setState({
         answerState: {
-          [answerId]: 'success',
+          [answerId]: "success",
           results
         }
       });
@@ -73,9 +54,9 @@ class Quiz extends Component {
         window.clearTimeout(timeout);
       }, 1000);
     } else {
-      results[question.id] = 'error';
+      results[question.id] = "error";
       this.setState({
-        answerState: { [answerId]: 'error' },
+        answerState: { [answerId]: "error" },
         results
       });
     }
@@ -94,7 +75,17 @@ class Quiz extends Component {
     });
   };
 
-  componentDidMount() {
+  async componentDidMount() {
+    try {
+      const response = await axiosQuiz.get(
+        `/quizes/${this.props.match.params.id}.json`
+      );
+      const quiz = response.data;
+      this.setState({
+        quiz,
+        loading: false
+      });
+    } catch (e) {}
     // console.log('Quiz ID = ', this.props.match.params.id);
   }
 
@@ -104,7 +95,9 @@ class Quiz extends Component {
         <div className={classes.QuizWrapper}>
           <h1>Ответьте на все вопросы</h1>
 
-          {this.state.isFinished ? (
+          {this.state.loading ? (
+            <Loader />
+          ) : this.state.isFinished ? (
             <FinishedQuiz
               results={this.state.results}
               quiz={this.state.quiz}

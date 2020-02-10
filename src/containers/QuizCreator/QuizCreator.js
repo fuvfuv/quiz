@@ -4,13 +4,14 @@ import classes from "./QuizCreator.scss";
 import Button from "../../components/UI/Button/Button.js";
 import Input from "../../components/UI/Input/Input.js";
 import Select from "../../components/UI/Select/Select";
+
+import axios from "../../axios/axios-quiz";
+
 import {
   createControl,
   validate,
   validateForm
 } from "../../form/formFramework";
-
-import axios from "axios";
 
 import Auxilary from "../../hoc/Auxilary/Auxilary";
 
@@ -79,7 +80,7 @@ export default class QuizCreator extends Component {
         { text: option1.value, id: option1.id },
         { text: option2.value, id: option2.id },
         { text: option3.value, id: option3.id },
-        { text: option3.value, id: option3.id }
+        { text: option4.value, id: option4.id }
       ]
     };
 
@@ -97,10 +98,7 @@ export default class QuizCreator extends Component {
     e.preventDefault();
 
     try {
-      await axios.post(
-        "https://react-quiz-a1017.firebaseio.com/quizes.json",
-        this.state.quiz
-      );
+      await axios.post("quizes.json", this.state.quiz);
 
       this.setState({
         quiz: [],
