@@ -6,9 +6,11 @@ import is from "is_js";
 import Button from "../../components/UI/Button/Button";
 import Input from "../../components/UI/Input/Input";
 
-import axios from "axios";
+import { connect } from "react-redux";
 
-export default class Auth extends Component {
+import { auth } from "../../store/actions/auth";
+
+class Auth extends Component {
   state = {
     isFormValid: false,
     formControls: {
@@ -39,42 +41,20 @@ export default class Auth extends Component {
     }
   };
 
-  handleLogin = async () => {
-    const authData = {
-      email: this.state.formControls.email.value,
-      password: this.state.formControls.password.value,
-      returnSecureToken: true
-    };
-
-    try {
-      const response = axios.post(
-        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAEPOGGCl0EVoKH2YabDOp--e6wgkQYX0s",
-        authData
-      );
-
-      response.then(data => console.log(data));
-    } catch (e) {
-      console.log(e);
-    }
+  handleLogin = () => {
+    this.props.auth(
+      this.state.formControls.email.value,
+      this.state.formControls.password.value,
+      true
+    );
   };
 
-  handleRegister = async () => {
-    const authData = {
-      email: this.state.formControls.email.value,
-      password: this.state.formControls.password.value,
-      returnSecureToken: true
-    };
-
-    try {
-      const response = axios.post(
-        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAEPOGGCl0EVoKH2YabDOp--e6wgkQYX0s",
-        authData
-      );
-
-      response.then(data => console.log(data));
-    } catch (e) {
-      console.log(e);
-    }
+  handleRegister = () => {
+    this.props.auth(
+      this.state.formControls.email.value,
+      this.state.formControls.password.value,
+      false
+    );
   };
 
   submitHandler = e => {
@@ -170,3 +150,11 @@ export default class Auth extends Component {
     );
   }
 }
+
+function mapDispatchToProps(dispatch) {
+  return {
+    auth: (email, password, isLogin) => dispatch(auth(email, password, isLogin))
+  };
+}
+
+export default connect(null, mapDispatchToProps)(Auth);
